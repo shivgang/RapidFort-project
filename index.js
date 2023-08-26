@@ -42,7 +42,7 @@ app.post('/upload',upload.single('file'),(req,res)=>{
 
 
   
-const PORT = 80 || process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT,()=>{
     console.log(`Server started on port ${PORT}`);
