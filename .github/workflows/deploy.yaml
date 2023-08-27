@@ -1,0 +1,58 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v0.3.0
+      with:
+        version: '444.0.0'  # Use the latest version
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        export_default_credentials: true
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Install gke-gcloud-auth-plugin
+      run: |
+        gcloud components install gke-gcloud-auth-plugin
+      # env:
+      #   CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
+      #   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}        
+
+    - name: Configure Docker
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/rapidfort:$GITHUB_SHA .
+        docker push ${{ secrets.DOCKER_USERNAME }}/rapidfort:$GITHUB_SHA
+      env:
+        GITHUB_SHA: ${{ github.sha }}
+
+    - name: Deploy to GKE
+      run: |
+        # Set up Kubernetes credentials
+        gcloud container clusters get-credentials rapid-cluster --zone asia-south2 --project ${{ secrets.GCP_PROJECT_ID }}
+
+        # Replace the placeholder with the desired tag (e.g., commit SHA)
+        sed -i 's/__TAG__/'"${GITHUB_SHA}"'/g' kubernetes/deployment.yaml
+
+        # Apply Kubernetes deployment and service configuration
+        kubectl apply -f kubernetes/deployment.yaml
+        kubectl apply -f kubernetes/service.yaml
+      env:
+        GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        GITHUB_SHA: ${{ github.sha }}

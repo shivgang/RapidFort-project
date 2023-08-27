@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapidfort-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rapidfort
+  template:
+    metadata:
+      labels:
+        app: rapidfort
+    spec:
+      containers:
+      - name: rapid-app-container
+        image: shivgangwar/rapidfort:__TAG__
+        ports:
+        - containerPort: 3000
