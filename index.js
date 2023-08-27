@@ -9,9 +9,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname));
 app.use(express.json());
 
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Files will be saved in the "uploads" directory
+        cb(null, 'uploads/'); // Files will be saved in the "uploads" dir
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
