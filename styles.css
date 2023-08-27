@@ -1,0 +1,11 @@
+*{
+    box-sizing:border-box;
+    margin: 0px;
+    text-align: center;
+}
+body{
+    margin: 50px;
+}
+form{
+    margin: 20px;
+}

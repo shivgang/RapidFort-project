@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 
-
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname));
 app.use(express.json());
@@ -31,13 +30,14 @@ app.post('/upload',upload.single('file'),(req,res)=>{
         return res.status(400).send('No file uploaded.');
     }
 
+    const fileLink = `<a href="/uploads/${req.file.originalname}" target="_blank">View File</a>`;
+
     const fileInfo = {
         name: req.file.originalname,
         extension: path.extname(req.file.originalname),
-        size: Math.round(req.file.size / 1024) + ' KB'
+        size: Math.round(req.file.size / 1024) + ' KB',
+        link : fileLink
     };
-
-    const fileLink = `<a href="/uploads/${req.file.originalname}" target="_blank">View File</a>`;
 
     res.send(`
         <h1>File Details</h1>
