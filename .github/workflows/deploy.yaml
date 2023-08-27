@@ -45,7 +45,7 @@ jobs:
     - name: Deploy to GKE
       run: |
         # Set up Kubernetes credentials
-        gcloud container clusters get-credentials rapid-cluster --zone asia-south2 --project ${{ secrets.GCP_PROJECT_ID }}
+        gcloud container clusters get-credentials rapidfort-cluster --zone asia-south2 --project ${{ secrets.GCP_PROJECT_ID }}
 
         # Replace the placeholder with the desired tag (e.g., commit SHA)
         sed -i 's/__TAG__/'"${GITHUB_SHA}"'/g' kubernetes/deployment.yaml
