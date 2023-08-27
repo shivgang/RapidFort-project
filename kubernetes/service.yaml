@@ -20,10 +20,10 @@ kind: Service
 metadata:
   name: server-1
   labels:
-    app: hello
+    app: server-1
 spec:
   selector:
-    app: hello
+    app: server-1
     tier: web
   ports:
   - port: 3000
